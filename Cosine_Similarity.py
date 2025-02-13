@@ -2,7 +2,7 @@ import numpy as np
 from scipy.spatial.distance import cosine
 import matplotlib.pyplot as plt
 
-# 定义集合 D
+# Positive spanning D
 D = [
     np.array([1, 0, 0, 0]),  # e_1
     np.array([0, 1, 0, 0]),  # e_2
@@ -12,11 +12,11 @@ D = [
     np.array([0, 0, -1, -1]) # -e_3 - e_4
 ]
 N = 4
-# 计算余弦相似度
+
 def cosine_similarity(u, d):
     return np.dot(u, d) / np.linalg.norm(d)
 
-# 计算余弦度量 cm(D)
+# cosine measure cm(D)
 def cosine_measure(D, u):
     # best_cosine_measure = float('inf')
 
@@ -26,11 +26,14 @@ def cosine_measure(D, u):
 
     return max_cosine_similarity
 
+# iteration information
 arr = []
 
 min_u = None
 min_position = None
 min_value = 100
+
+# Initialization
 for i in range(20):
     u = np.random.uniform(-np.pi, np.pi, N)
     u = u / np.linalg.norm(u)
@@ -39,21 +42,23 @@ for i in range(20):
     if cosine_val < min_value:
         min_value = cosine_val
         min_u = u
-
+# end initialization
 ut = min_u
-# 生成单位向量 u
-for i in range(1000):  # 这里可以根据需要调整测试的单位向量数量
+
+# Optimization
+for i in range(1000):  # Max iterations
     gradient = 0
-    for j in range(10):
-        u = np.random.randn(N)  # 生成一个随机向量
-        u = u / np.linalg.norm(u)  # 将其规范化为单位向量
+    for j in range(10):   # reduce the variance
+        u = np.random.randn(N)  # Guassion noise \mu
+        u = u / np.linalg.norm(u)  # normalize it
         g1 = cosine_measure(D, ut+0.1*u)
         g2 = cosine_measure(D, ut-0.1*u)
-        gradient += ((g1-g2)/0.2)*u
+        gradient += ((g1-g2)/0.2)*u  # Centered finite difference gradient
+        
     gradient = gradient/10
 
-    ut = ut - 0.01 * gradient
-    ut = ut / np.linalg.norm(ut)
+    ut = ut - 0.01 * gradient  # update the position of the vector
+    ut = ut / np.linalg.norm(ut)  # make sure it still on the unit sphere
     min = 100
     val = cosine_measure(D, ut)
     arr.append(val)
@@ -67,19 +72,17 @@ print(f"Cosine Measure: {min}")
 
 fig, ax = plt.subplots()
 
-# 绘制loss值
+#  DRAW FIGURE
 ax.plot(arr, label='Training Loss')
 
-# 添加标题和标签
+
 ax.set_title('Loss During Training')
 ax.set_xlabel('Iteration')
 ax.set_ylabel('Loss')
 
-# 显示图例
+
 ax.legend()
 
-# 显示网格
 ax.grid(True)
 
-# 显示图形
 plt.show()
