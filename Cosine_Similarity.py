@@ -14,7 +14,7 @@ D = [
 N = 4
 
 def cosine_similarity(u, d):
-    return np.dot(u, d) / np.linalg.norm(d)
+    return np.dot(u, d) / ( np.linalg.norm(u) * np.linalg.norm(d) )
 
 # cosine measure cm(D)
 def cosine_measure(D, u):
