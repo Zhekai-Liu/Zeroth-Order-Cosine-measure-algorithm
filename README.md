@@ -7,3 +7,5 @@ We provide two visions of the algorithms.
 1). Rectangular coordinates Vision, optimize the rectangular coordinates position.
 
 2). Spheric coordinates Vision, optimize the spheric position directly.
+
+Please read the details in the ZO-CMA_PAPER.
