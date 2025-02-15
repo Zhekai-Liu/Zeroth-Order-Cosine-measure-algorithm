@@ -11,22 +11,13 @@ import matplotlib.pyplot as plt
 #     np.array([-1, -1, 0, 0]),# -e_1 - e_2
 #     np.array([0, 0, -1, -1]) # -e_3 - e_4
 # ]
-# D = [
-#     np.array([1, 0]),  # e_1
-#     np.array([0, 1]),  # e_2
-#     np.array([-1, -1])
-# ]
 D = [
-    np.array([1, 0, 0, 0, 0, 0, 0, 0]),
-    np.array([0, 1, 0, 0, 0, 0, 0, 0]),
-    np.array([0, 0, 1, 0, 0, 0, 0 ,0]),
-    np.array([0, 0, 0, 1, 0, 0 ,0 ,0]),
-    np.array([0, 0, 0, 0, 1, 0 ,0 ,0]),
-    np.array([0, 0, 0, 0, 0, 1 ,0 ,0]),
-    np.array([0, 0, 0, 0, 0, 0 ,1 ,0]),
-    np.array([0, 0, 0, 0, 0, 0 ,0 ,1])
+    np.array([1, 0]),  # e_1
+    np.array([0, 1])  # e_2
+  
 ]
-N = 8
+
+N = 2
 
 def cosine_similarity(u, d):
     return np.dot(u, d) / np.linalg.norm(u) * np.linalg.norm(d)
@@ -35,7 +26,7 @@ def cosine_similarity(u, d):
 def cosine_measure(D, u):
     # best_cosine_measure = float('inf')
 
-    max_cosine_similarity = max(cosine_similarity(np.cos(u), d) for d in D)
+    max_cosine_similarity = max(cosine_similarity(np.cos(u)/np.linalg.norm(u), d) for d in D)
 
         # best_cosine_measure = min(best_cosine_measure, max_cosine_similarity)
 
@@ -46,7 +37,7 @@ arr = []
 min_u = None
 min_position = None
 min_value = 100
-for i in range(1000):
+for i in range(20):
     u = np.random.uniform(-np.pi, np.pi, N)
     cosine_val = cosine_measure(D, u)
 
@@ -56,7 +47,7 @@ for i in range(1000):
 
 ut = min_u
 
-for i in range(1000):  
+for i in range(150):  
     gradient = 0
     for j in range(10):
         u = np.random.randn(N)
