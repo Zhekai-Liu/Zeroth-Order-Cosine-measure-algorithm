@@ -20,7 +20,7 @@ D = [
 N = 2
 
 def cosine_similarity(u, d):
-    return np.dot(u, d) / np.linalg.norm(u) * np.linalg.norm(d)
+    return np.dot(u, d) / np.linalg.norm(d)
 
 
 def cosine_measure(D, u):
