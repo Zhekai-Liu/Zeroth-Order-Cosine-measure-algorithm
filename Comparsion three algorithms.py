@@ -119,8 +119,8 @@ for i in range(1000):  # 这里可以根据需要调整测试的单位向量数�
         beta = np.where(beta < -np.pi, beta + 2 * np.pi, beta)  # 小于 -π 时加 2π
         beta = np.where(beta > np.pi, beta - 2 * np.pi, beta)  # 大于 π 时减 2π
 
-        g11 = cosine_measure(D, alpha)
-        g22 = cosine_measure(D, beta)
+        g11 = cosine_measuress(D, alpha)
+        g22 = cosine_measuress(D, beta)
         gradient_sphere += ((g11 - g22) / 0.2) * u
 
 
