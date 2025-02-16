@@ -9,4 +9,5 @@ We provide three visions of the algorithms.
 2). Spheric coordinates Vision, optimize the spheric position directly.
 
 3). Comparison between ZO-CMA and Central simplex gradient.
+
 Please read the details in the ZO-CMA_PAPER.
