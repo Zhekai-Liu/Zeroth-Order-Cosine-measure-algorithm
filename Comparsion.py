@@ -6,27 +6,27 @@ import matplotlib.pyplot as plt
 #      np.array([1, 0]),  # e_1
 #      np.array([0, 1])  # e_2
 # ]
-D = [
-    np.array([1, 0, 0, 0]),  # e_1
-    np.array([0, 1, 0, 0]),  # e_2
-    np.array([1, 1, 1, 0]),  # e_1 + e_2 + e_3
-    np.array([0, 0, 0, 1]),  # e_4
-    np.array([-1, -1, 0, 0]),# -e_1 - e_2
-    np.array([0, 0, -1, -1]) # -e_3 - e_4
-]
-
 # D = [
-#     np.array([1, 0, 0, 0, 0, 0, 0, 0]),
-#     np.array([0, 1, 0, 0, 0, 0, 0, 0]),
-#     np.array([0, 0, 1, 0, 0, 0, 0 ,0]),
-#     np.array([0, 0, 0, 1, 0, 0 ,0 ,0]),
-#     np.array([0, 0, 0, 0, 1, 0 ,0 ,0]),
-#     np.array([0, 0, 0, 0, 0, 1 ,0 ,0]),
-#     np.array([0, 0, 0, 0, 0, 0 ,1 ,0]),
-#     np.array([0, 0, 0, 0, 0, 0 ,0 ,1])
+#     np.array([1, 0, 0, 0]),  # e_1
+#     np.array([0, 1, 0, 0]),  # e_2
+#     np.array([1, 1, 1, 0]),  # e_1 + e_2 + e_3
+#     np.array([0, 0, 0, 1]),  # e_4
+#     np.array([-1, -1, 0, 0]),# -e_1 - e_2
+#     np.array([0, 0, -1, -1]) # -e_3 - e_4
 # ]
 
-N = 4
+D = [
+    np.array([1, 0, 0, 0, 0, 0, 0, 0]),
+    np.array([0, 1, 0, 0, 0, 0, 0, 0]),
+    np.array([0, 0, 1, 0, 0, 0, 0 ,0]),
+    np.array([0, 0, 0, 1, 0, 0 ,0 ,0]),
+    np.array([0, 0, 0, 0, 1, 0 ,0 ,0]),
+    np.array([0, 0, 0, 0, 0, 1 ,0 ,0]),
+    np.array([0, 0, 0, 0, 0, 0 ,1 ,0]),
+    np.array([0, 0, 0, 0, 0, 0 ,0 ,1])
+]
+
+N = 8
 def centered_simplex_gradient(Y_plus, f, D):
 
     y0 = Y_plus[0]
@@ -59,8 +59,18 @@ def cosine_measure(D, u):
 
     return max_cosine_similarity
 
+def cosine_measuress(D, u):
+    # best_cosine_measure = float('inf')
+
+    max_cosine_similarity = max(cosine_similarity(np.cos(u)/np.linalg.norm(np.cos(u)), d) for d in D)
+
+        # best_cosine_measure = min(best_cosine_measure, max_cosine_similarity)
+
+    return max_cosine_similarity
+
 arr1 = []
 arr2 = []
+arrs = []
 
 min_u = None
 min_position = None
@@ -76,21 +86,54 @@ for i in range(50):
 
 ut = min_u
 current_point = min_u
+uts = np.arccos(min_u)
+uts = np.where(uts < -np.pi, uts + 2 * np.pi, uts)  # 小于 -π 时加 2π
+uts = np.where(uts > np.pi, uts - 2 * np.pi, uts)  # 大于 π 时减 2π
+
 min = 100
 min2 = 100
+mins = 100
 # 生成单位向量 u
 learning_rate1 = 0.01
 learning_rate2 = 0.01
 for i in range(1000):  # 这里可以根据需要调整测试的单位向量数量
     gradient = 0
+    gradient_sphere = 0
     Y_plus = [current_point]
     for j in range(N):
         u = np.random.randn(N)
         u = u / np.linalg.norm(u) ####
+
         g1 = cosine_measure(D, ut+0.1*u)
         g2 = cosine_measure(D, ut-0.1*u)
         gradient += ((g1-g2)/0.2)*u
+
         Y_plus.append(current_point+0.1*u)
+
+        alpha = uts + 0.1 * u  # 先计算原始值
+        alpha = np.where(alpha < -np.pi, alpha + 2 * np.pi, alpha)  # 小于 -π 时加 2π
+        alpha = np.where(alpha > np.pi, alpha - 2 * np.pi, alpha)  # 大于 π 时减 2π
+
+        # 处理 beta = ut - 0.1*u
+        beta = uts - 0.1 * u  # 注意这里是减号，修正原代码中的变量名错误
+        beta = np.where(beta < -np.pi, beta + 2 * np.pi, beta)  # 小于 -π 时加 2π
+        beta = np.where(beta > np.pi, beta - 2 * np.pi, beta)  # 大于 π 时减 2π
+
+        g11 = cosine_measure(D, alpha)
+        g22 = cosine_measure(D, beta)
+        gradient_sphere += ((g11 - g22) / 0.2) * u
+
+
+    gradient_sphere = gradient_sphere / N
+    gradient_sphere = gradient_sphere / np.linalg.norm(gradient_sphere)
+    uts = uts - learning_rate1 * gradient_sphere
+    uts = np.where(uts < -np.pi, uts + 2 * np.pi, uts)  # 小于 -π 时加 2π
+    uts = np.where(uts > np.pi, uts - 2 * np.pi, uts)  # 大于 π 时减 2π
+    valllll = cosine_measuress(D, uts)
+    arrs.append(valllll)
+    if valllll < mins:
+        mins = valllll
+
     gradient = gradient/N
     gradient = gradient / np.linalg.norm(gradient)
 
@@ -116,16 +159,19 @@ for i in range(1000):  # 这里可以根据需要调整测试的单位向量数�
 
 
 
+
 # cm_value = cosine_measure(D)
-print(f"Cosine Measure ZO: {min}")
+print(f"Cosine Measure ZO-R: {min}")
 print(f"Cosine Measure CS: {min2}")
+print(f"Cosine Measure ZO-S: {mins}")
 #print(arr)
 
 fig, ax = plt.subplots()
 
 # 绘制 arr1 和 arr2
-ax.plot(arr1, label='Zoerth-Order Loss 1')  # 绘制 arr1
+ax.plot(arr1, label='Zoerth-Order Rectangular Loss 1')  # 绘制 arr1
 ax.plot(arr2, label='Central Simplex Loss 2')  # 绘制 arr2
+ax.plot(arrs, label='Zoerth-Order Spheric Loss 2')  # 绘制 arr2
 
 # 添加标题和标签
 ax.set_title('Loss During Training')
